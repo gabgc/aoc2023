@@ -12,6 +12,7 @@ function main1() {
       return rtn;
     })
     .reduce((prev, curr) => (prev += curr));
+  console.log(result);
 }
 
 function main2() {
@@ -89,13 +90,13 @@ function main2() {
       }
       const numberAsStr = firstDigit + lastDigit;
       const rtn = parseInt(numberAsStr);
-      console.log(
-        line,
-        "first digit: " + firstDigit,
-        ", last digit: " + lastDigit,
-        ", number = ",
-        rtn
-      );
+      // console.log(
+      //   line,
+      //   "first digit: " + firstDigit,
+      //   ", last digit: " + lastDigit,
+      //   ", number = ",
+      //   rtn
+      // );
       return rtn;
     })
     .reduce((prev, curr) => (prev += curr));
