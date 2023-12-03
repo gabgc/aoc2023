@@ -26,8 +26,8 @@ function main1() {
               maybeNumber = data[currY][currX] + maybeNumber;
               currX = currX - 1;
             }
-            currX = j + xOffset + 1;
             if (maybeNumber === "" && xOffset === 1) break;
+            currX = j + xOffset + 1;
             while (
               currX < data[i].length &&
               !isNaN(parseInt(data[currY][currX]))
