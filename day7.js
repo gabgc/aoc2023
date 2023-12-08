@@ -4,22 +4,6 @@ function loadData() {
   return fs.readFileSync("day7-data.txt").toString("utf-8").split("\n");
 }
 
-const orderOfStrength = [
-  "A",
-  "K",
-  "Q",
-  "J",
-  "T",
-  "9",
-  "8",
-  "7",
-  "6",
-  "5",
-  "4",
-  "3",
-  "2",
-];
-
 function cardCounts(hand) {
   const count = {};
   for (let i = 0; i < hand.length; i++) {
@@ -28,7 +12,7 @@ function cardCounts(hand) {
   return count;
 }
 
-function isHand1Better(hand1, hand2) {
+function isHand1Better(hand1, hand2, orderOfStrength) {
   let i = 0;
 
   while (
@@ -69,6 +53,21 @@ const detector = {
 };
 
 function main1() {
+  const orderOfStrength = [
+    "A",
+    "K",
+    "Q",
+    "J",
+    "T",
+    "9",
+    "8",
+    "7",
+    "6",
+    "5",
+    "4",
+    "3",
+    "2",
+  ];
   const handsTypeRanked = {
     fiveOfAKind: [],
     fourOfAKind: [],
@@ -93,7 +92,7 @@ function main1() {
         let j = 0;
         while (
           j < handsType.length &&
-          !isHand1Better(play.hand, handsType[j].hand)
+          !isHand1Better(play.hand, handsType[j].hand, orderOfStrength)
         ) {
           j++;
         }
@@ -114,7 +113,78 @@ function main1() {
 }
 
 function main2() {
-  return 0;
+  const orderOfStrength = [
+    "A",
+    "K",
+    "Q",
+    "T",
+    "9",
+    "8",
+    "7",
+    "6",
+    "5",
+    "4",
+    "3",
+    "2",
+    "J",
+  ];
+
+  function calculateBestHandWithJ(hand) {
+    const count = cardCounts(hand);
+    if (!count["J"] || count["J"] === 0 || count["J"] === 5) {
+      return hand;
+    }
+    const countEntries = Object.entries(count)
+      .filter((entry) => entry[0] !== "J")
+      .sort((a, b) => -(a[1] - b[1]));
+    return hand.replaceAll("J", countEntries[0][0]);
+  }
+
+  const handsTypeRanked = {
+    fiveOfAKind: [],
+    fourOfAKind: [],
+    fullHouse: [],
+    threeOfAKind: [],
+    twoPair: [],
+    onePair: [],
+    highestCard: [],
+  };
+  const data = loadData();
+  for (let line of data) {
+    const split = line.split(" ");
+    const play = { hand: split[0], bid: parseInt(split[1]) };
+    const detectors = Object.entries(detector);
+    for (let i = 0; i < detectors.length; i++) {
+      if (
+        detectors[i][1](play.hand) ||
+        detectors[i][1](calculateBestHandWithJ(play.hand))
+      ) {
+        const handsType = handsTypeRanked[detectors[i][0]];
+        if (handsType.length === 0) {
+          handsType.push(play);
+          break;
+        }
+        let j = 0;
+        while (
+          j < handsType.length &&
+          !isHand1Better(play.hand, handsType[j].hand, orderOfStrength)
+        ) {
+          j++;
+        }
+        handsType.splice(j, 0, play);
+        break;
+      }
+    }
+  }
+  let result = 0;
+  let i = data.length;
+  for (let handsType of Object.values(handsTypeRanked)) {
+    for (let play of handsType) {
+      result += play.bid * i;
+      i--;
+    }
+  }
+  return result;
 }
 
 console.log("Solution to problem 1:", main1());
